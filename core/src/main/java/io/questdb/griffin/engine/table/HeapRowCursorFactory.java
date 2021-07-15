@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RowCursor;
 import io.questdb.cairo.sql.RowCursorFactory;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.ObjList;
 
 public class HeapRowCursorFactory implements RowCursorFactory {
@@ -58,7 +59,7 @@ public class HeapRowCursorFactory implements RowCursorFactory {
     }
 
     @Override
-    public void prepareCursor(TableReader tableReader, SqlExecutionContext sqlExecutionContext) throws SqlException {
+    public void prepareCursor(TableReader tableReader, SqlExecutionContext sqlExecutionContext) throws SqlException, StaleQueryCacheException {
         RowCursorFactory.prepareCursor(cursorFactories, tableReader, sqlExecutionContext);
     }
 }

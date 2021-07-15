@@ -24,9 +24,11 @@
 
 package io.questdb.griffin.engine.table;
 
+import io.questdb.cairo.TableReader;
 import io.questdb.cairo.sql.DataFrameCursor;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.DirectLongList;
 import io.questdb.std.IntList;
 import io.questdb.std.Rows;
@@ -65,10 +67,12 @@ abstract class AbstractDescendingRecordListCursor extends AbstractDataFrameRecor
     }
 
     @Override
-    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException {
+    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         this.dataFrameCursor = dataFrameCursor;
-        this.recordA.of(dataFrameCursor.getTableReader());
-        this.recordB.of(dataFrameCursor.getTableReader());
+        TableReader tableReader = dataFrameCursor.getTableReader();
+
+        this.recordA.of(tableReader);
+        this.recordB.of(tableReader);
         rows.clear();
         buildTreeMap(executionContext);
         index = rows.size() - 1;

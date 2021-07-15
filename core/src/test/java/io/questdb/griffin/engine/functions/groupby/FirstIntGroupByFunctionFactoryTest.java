@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.Numbers;
 import io.questdb.std.Rnd;
@@ -45,7 +46,7 @@ public class FirstIntGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testAllNull() throws SqlException {
+    public void testAllNull() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (f int)", sqlExecutionContext);
 
@@ -68,7 +69,7 @@ public class FirstIntGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testFirstNull() throws SqlException {
+    public void testFirstNull() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (f int)", sqlExecutionContext);
 
@@ -94,7 +95,7 @@ public class FirstIntGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testNonNull() throws SqlException {
+    public void testNonNull() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (f int)", sqlExecutionContext);
 
@@ -118,7 +119,7 @@ public class FirstIntGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testSomeNull() throws SqlException {
+    public void testSomeNull() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (f int)", sqlExecutionContext);
 

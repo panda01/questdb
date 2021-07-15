@@ -27,6 +27,7 @@ package io.questdb.griffin.engine.table;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +83,7 @@ class DataFrameRecordCursor extends AbstractDataFrameRecordCursor {
     }
 
     @Override
-    public void of(DataFrameCursor dataFrameCursor, SqlExecutionContext sqlExecutionContext) throws SqlException {
+    public void of(DataFrameCursor dataFrameCursor, SqlExecutionContext sqlExecutionContext) throws SqlException, StaleQueryCacheException {
         if (this.dataFrameCursor != dataFrameCursor) {
             close();
             this.dataFrameCursor = dataFrameCursor;

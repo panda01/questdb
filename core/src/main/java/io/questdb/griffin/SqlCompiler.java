@@ -687,7 +687,13 @@ public class SqlCompiler implements Closeable {
         if (executor == null) {
             return compileUsingModel(executionContext);
         }
-        return executor.execute(executionContext);
+        try {
+            return executor.execute(executionContext);
+        } catch (StaleQueryCacheException e) {
+            // This suppose to never happen, brand new compile should not be stale
+            LOG.error().$(e.getFlyweightMessage()).$();
+            throw CairoException.instance(0).put(e.getFlyweightMessage());
+        }
     }
 
     public CairoEngine getEngine() {
@@ -1621,6 +1627,9 @@ public class SqlCompiler implements Closeable {
                 }
                 throw SqlException.$(0, "Concurrent modification could not be handled. Failed to clean up. See log for more details.");
             }
+        } catch (StaleQueryCacheException e) {
+            LOG.error().$(e.getFlyweightMessage()).$();
+            throw CairoException.instance(0).put(e.getFlyweightMessage());
         }
     }
 
@@ -1807,25 +1816,26 @@ public class SqlCompiler implements Closeable {
             final int cursorTimestampIndex = cursorMetadata.getTimestampIndex();
             final int cursorColumnCount = cursorMetadata.getColumnCount();
 
-            // fail when target table requires chronological data and cursor cannot provide it
-            if (writerTimestampIndex > -1 && cursorTimestampIndex == -1) {
-                if (cursorColumnCount <= writerTimestampIndex) {
-                    throw SqlException.$(name.position, "select clause must provide timestamp column");
-                } else {
-                    int columnType = cursorMetadata.getColumnType(writerTimestampIndex);
-                    if (columnType != ColumnType.TIMESTAMP && columnType != ColumnType.STRING && columnType != ColumnType.NULL) {
-                        throw SqlException.$(name.position, "expected timestamp column but type is ").put(ColumnType.nameOf(columnType));
-                    }
-                }
-            }
 
-            if (writerTimestampIndex > -1 && cursorTimestampIndex > -1 && writerTimestampIndex != cursorTimestampIndex) {
-                throw SqlException.$(name.position, "nominated column of existing table (").put(writerTimestampIndex).put(") does not match nominated column in select query (").put(cursorTimestampIndex).put(')');
-            }
+//            if (writerTimestampIndex > -1 && cursorTimestampIndex == -1) {
+//                if (cursorColumnCount <= writerTimestampIndex) {
+//
+//                } else {
+//                    int columnType = cursorMetadata.getColumnType(writerTimestampIndex);
+//                    if (columnType != ColumnType.TIMESTAMP && columnType != ColumnType.STRING) {
+//                        throw SqlException.$(name.position, "expected timestamp column but type is ").put(ColumnType.nameOf(columnType));
+//                    }
+//                }
+//            }
+
+//            if (writerTimestampIndex > -1 && cursorTimestampIndex > -1 && writerTimestampIndex != cursorTimestampIndex) {
+//                throw SqlException.$(name.position, "nominated column of existing table (").put(writerTimestampIndex).put(") does not match nominated column in select query (").put(cursorTimestampIndex).put(')');
+//            }
 
             final RecordToRowCopier copier;
             CharSequenceHashSet columnSet = model.getColumnSet();
             final int columnSetSize = columnSet.size();
+            int timestampIndexFound = -1;
             if (columnSetSize > 0) {
                 // validate type cast
 
@@ -1852,6 +1862,18 @@ public class SqlCompiler implements Closeable {
                                 writerMetadata.getColumnName(i)
                         );
                     }
+
+                    if (index == writerTimestampIndex) {
+                        timestampIndexFound = i;
+                        if (fromType != ColumnType.TIMESTAMP && fromType != ColumnType.STRING) {
+                            throw SqlException.$(name.position, "expected timestamp column but type is ").put(ColumnType.nameOf(fromType));
+                        }
+                    }
+                }
+
+                // fail when target table requires chronological data and cursor cannot provide it
+                if (timestampIndexFound < 0) {
+                    throw SqlException.$(name.position, "select clause must provide timestamp column");
                 }
 
                 copier = assembleRecordToRowCopier(asm, cursorMetadata, writerMetadata, listColumnFilter);
@@ -1903,7 +1925,7 @@ public class SqlCompiler implements Closeable {
                                     model.getCommitLag()
                             );
                         } else {
-                            copyOrdered(writer, factory.getMetadata(), cursor, copier, writerTimestampIndex);
+                            copyOrdered(writer, factory.getMetadata(), cursor, copier, timestampIndexFound);
                         }
                     }
                 } catch (Throwable e) {
@@ -1911,6 +1933,9 @@ public class SqlCompiler implements Closeable {
                     writer.rollback();
                     throw e;
                 }
+            } catch (StaleQueryCacheException e) {
+                LOG.error().$(e.getFlyweightMessage()).$();
+                throw CairoException.instance(0).put(e.getFlyweightMessage());
             }
         }
         return compiledQuery.ofInsertAsSelect();
@@ -2332,7 +2357,7 @@ public class SqlCompiler implements Closeable {
 
     @FunctionalInterface
     protected interface KeywordBasedExecutor {
-        CompiledQuery execute(SqlExecutionContext executionContext) throws SqlException;
+        CompiledQuery execute(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException;
     }
 
     @FunctionalInterface

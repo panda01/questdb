@@ -35,6 +35,7 @@ import io.questdb.cairo.map.MapValue;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.Misc;
 import io.questdb.std.Transient;
 
@@ -103,7 +104,7 @@ public class SpliceJoinLightRecordCursorFactory extends AbstractRecordCursorFact
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         cursor.of(
                 masterFactory.getCursor(executionContext),
                 slaveFactory.getCursor(executionContext));

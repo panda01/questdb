@@ -30,10 +30,7 @@ import io.questdb.cairo.map.MapFactory;
 import io.questdb.cairo.map.MapKey;
 import io.questdb.cairo.map.MapValue;
 import io.questdb.cairo.sql.*;
-import io.questdb.griffin.FunctionParser;
-import io.questdb.griffin.SqlException;
-import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.SqlExecutionInterruptor;
+import io.questdb.griffin.*;
 import io.questdb.griffin.engine.EmptyTableRandomRecordCursor;
 import io.questdb.griffin.engine.functions.GroupByFunction;
 import io.questdb.griffin.engine.functions.columns.TimestampColumn;
@@ -200,7 +197,7 @@ public class SampleByInterpolateRecordCursorFactory implements RecordCursorFacto
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         recordKeyMap.clear();
         dataMap.clear();
         final RecordCursor baseCursor = base.getCursor(executionContext);

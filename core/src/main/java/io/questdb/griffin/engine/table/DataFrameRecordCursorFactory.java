@@ -29,6 +29,7 @@ import io.questdb.cairo.sql.*;
 import io.questdb.cairo.vm.ReadOnlyVirtualMemory;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import io.questdb.std.LongList;
 import io.questdb.std.Misc;
@@ -112,7 +113,7 @@ public class DataFrameRecordCursorFactory extends AbstractDataFrameRecordCursorF
     protected RecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException {
+    ) throws SqlException, StaleQueryCacheException {
         cursor.of(dataFrameCursor, executionContext);
         if (filter != null) {
             filter.init(cursor, executionContext);
@@ -214,8 +215,7 @@ public class DataFrameRecordCursorFactory extends AbstractDataFrameRecordCursorF
                         }
                     }
                     rowLo = dataFrame.getRowLo();
-                    TableReaderPageFrameCursor.TableReaderPageFrame pageFrame = computeFrame(computePageMin(base));
-                    return pageFrame;
+                    return computeFrame(computePageMin(base));
                 }
             }
             rowLo = 0;

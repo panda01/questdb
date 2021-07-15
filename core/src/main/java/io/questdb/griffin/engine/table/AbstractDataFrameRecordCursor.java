@@ -28,6 +28,7 @@ import io.questdb.cairo.TableReaderSelectedColumnRecord;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import io.questdb.std.Rows;
 import org.jetbrains.annotations.NotNull;
@@ -72,5 +73,5 @@ public abstract class AbstractDataFrameRecordCursor implements RecordCursor {
         ((TableReaderSelectedColumnRecord) record).jumpTo(Rows.toPartitionIndex(atRowId), Rows.toLocalRowID(atRowId));
     }
 
-    abstract void of(DataFrameCursor cursor, SqlExecutionContext executionContext) throws SqlException;
+    abstract void of(DataFrameCursor cursor, SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException;
 }

@@ -30,6 +30,7 @@ import io.questdb.cairo.TableUtils;
 import io.questdb.cairo.sql.DataFrame;
 import io.questdb.cairo.sql.Function;
 import io.questdb.cairo.sql.RowCursor;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 
 class SymbolIndexFilteredRowCursor implements RowCursor {
@@ -98,7 +99,7 @@ class SymbolIndexFilteredRowCursor implements RowCursor {
         return this;
     }
 
-    void prepare(TableReader tableReader) {
+    void prepare(TableReader tableReader) throws StaleQueryCacheException {
         this.record.of(tableReader);
     }
 }

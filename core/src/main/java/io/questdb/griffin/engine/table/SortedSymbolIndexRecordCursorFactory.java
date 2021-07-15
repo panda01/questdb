@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,7 +71,7 @@ public class SortedSymbolIndexRecordCursorFactory extends AbstractDataFrameRecor
 
     @Override
     protected RecordCursor getCursorInstance(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext)
-            throws SqlException {
+            throws SqlException, StaleQueryCacheException {
         this.cursor.of(dataFrameCursor, executionContext);
         return this.cursor;
     }

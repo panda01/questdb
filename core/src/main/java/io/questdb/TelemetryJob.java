@@ -188,6 +188,10 @@ public class TelemetryJob extends SynchronizedJob implements Closeable {
                 // if there are no record for telemetry id we need to create one using clocks
                 appendConfigRow(compiler, configWriter, null, enabled);
             }
+        } catch (StaleQueryCacheException e) {
+            // Should not happen, query is just compiled
+            LOG.error().$(e.getFlyweightMessage()).$();
+            throw CairoException.instance(0).put(e.getFlyweightMessage());
         }
         return configWriter;
     }

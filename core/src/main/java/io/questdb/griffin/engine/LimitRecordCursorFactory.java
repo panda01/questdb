@@ -28,6 +28,7 @@ import io.questdb.cairo.AbstractRecordCursorFactory;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import org.jetbrains.annotations.Nullable;
 
 public class LimitRecordCursorFactory extends AbstractRecordCursorFactory {
@@ -41,7 +42,7 @@ public class LimitRecordCursorFactory extends AbstractRecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         cursor.of(base.getCursor(executionContext), executionContext);
         return cursor;
     }

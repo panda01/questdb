@@ -31,6 +31,7 @@ import io.questdb.cairo.TableColumnMetadata;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 
 public class CountRecordCursorFactory extends AbstractRecordCursorFactory {
     public static final GenericRecordMetadata DEFAULT_COUNT_METADATA = new GenericRecordMetadata();
@@ -48,7 +49,7 @@ public class CountRecordCursorFactory extends AbstractRecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         try (RecordCursor baseCursor = base.getCursor(executionContext)) {
             final long size = baseCursor.size();
             if (size < 0) {

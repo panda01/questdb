@@ -106,40 +106,48 @@ public class TextQueryProcessor implements HttpRequestProcessor, Closeable {
             state.recordCursorFactory = QueryCache.getInstance().poll(state.query);
             state.setQueryCacheable(true);
             sqlExecutionContext.with(context.getCairoSecurityContext(), null, null, context.getFd(), interruptor.of(context.getFd()));
-            if (state.recordCursorFactory == null) {
-                final CompiledQuery cc = compiler.compile(state.query, sqlExecutionContext);
-                if (cc.getType() == CompiledQuery.SELECT) {
-                    state.recordCursorFactory = cc.getRecordCursorFactory();
+            boolean doneCompile = false;
+            while (!doneCompile) {
+                doneCompile = true;
+                if (state.recordCursorFactory == null) {
+                    final CompiledQuery cc = compiler.compile(state.query, sqlExecutionContext);
+                    if (cc.getType() == CompiledQuery.SELECT) {
+                        state.recordCursorFactory = cc.getRecordCursorFactory();
+                    }
+                    info(state).$("execute-new [q=`").utf8(state.query).
+                            $("`, skip: ").$(state.skip).
+                            $(", stop: ").$(state.stop).
+                            $(']').$();
+                    sqlExecutionContext.storeTelemetry(cc.getType(), Telemetry.ORIGIN_HTTP_TEXT);
+                } else {
+                    info(state).$("execute-cached [q=`").utf8(state.query).
+                            $("`, skip: ").$(state.skip).
+                            $(", stop: ").$(state.stop).
+                            $(']').$();
+                    sqlExecutionContext.storeTelemetry(CompiledQuery.SELECT, Telemetry.ORIGIN_HTTP_TEXT);
                 }
-                info(state).$("execute-new [q=`").utf8(state.query).
-                        $("`, skip: ").$(state.skip).
-                        $(", stop: ").$(state.stop).
-                        $(']').$();
-                sqlExecutionContext.storeTelemetry(cc.getType(), Telemetry.ORIGIN_HTTP_TEXT);
-            } else {
-                info(state).$("execute-cached [q=`").utf8(state.query).
-                        $("`, skip: ").$(state.skip).
-                        $(", stop: ").$(state.stop).
-                        $(']').$();
-                sqlExecutionContext.storeTelemetry(CompiledQuery.SELECT, Telemetry.ORIGIN_HTTP_TEXT);
-            }
 
-            if (state.recordCursorFactory != null) {
-                try {
-                    state.cursor = state.recordCursorFactory.getCursor(sqlExecutionContext);
-                    state.metadata = state.recordCursorFactory.getMetadata();
-                    header(context.getChunkedResponseSocket(), state);
-                    resumeSend(context);
-                } catch (CairoException e) {
-                    state.setQueryCacheable(e.isCacheable());
-                    internalError(context.getChunkedResponseSocket(), e, state);
-                } catch (CairoError e) {
-                    internalError(context.getChunkedResponseSocket(), e, state);
+                if (state.recordCursorFactory != null) {
+                    try {
+                        state.cursor = state.recordCursorFactory.getCursor(sqlExecutionContext);
+                        state.metadata = state.recordCursorFactory.getMetadata();
+                        header(context.getChunkedResponseSocket(), state);
+                        resumeSend(context);
+                    } catch (CairoException e) {
+                        state.setQueryCacheable(e.isCacheable());
+                        internalError(context.getChunkedResponseSocket(), e, state);
+                    } catch (CairoError e) {
+                        internalError(context.getChunkedResponseSocket(), e, state);
+                    } catch (StaleQueryCacheException e) {
+                        LOG.info().$(e.getFlyweightMessage()).$();
+                        doneCompile = false;
+                        state.recordCursorFactory = null;
+                    }
+                } else {
+                    headerNoContentDisposition(context.getChunkedResponseSocket());
+                    sendConfirmation(context.getChunkedResponseSocket());
+                    readyForNextRequest(context);
                 }
-            } else {
-                headerNoContentDisposition(context.getChunkedResponseSocket());
-                sendConfirmation(context.getChunkedResponseSocket());
-                readyForNextRequest(context);
             }
         } catch (SqlException e) {
             syntaxError(context.getChunkedResponseSocket(), e, state);

@@ -26,10 +26,7 @@ package io.questdb.test.tools;
 
 import io.questdb.cairo.*;
 import io.questdb.cairo.sql.*;
-import io.questdb.griffin.CompiledQuery;
-import io.questdb.griffin.SqlCompiler;
-import io.questdb.griffin.SqlException;
-import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.*;
 import io.questdb.griffin.model.IntervalUtils;
 import io.questdb.log.Log;
 import io.questdb.log.LogRecord;
@@ -420,8 +417,14 @@ public final class TestUtils {
                             printer.print(actualCursor, factory2.getMetadata(), false, log);
                             log.xDebugW().$(">").$();
                         }
+                    } catch (StaleQueryCacheException ee) {
+                        ee.printStackTrace();
+                        throw SqlException.position(0).put(ee.getFlyweightMessage());
                     }
                     throw e;
+                } catch (StaleQueryCacheException e) {
+                    e.printStackTrace();
+                    throw SqlException.position(0).put(e.getFlyweightMessage());
                 }
             }
         }
@@ -596,6 +599,9 @@ public final class TestUtils {
         try (RecordCursorFactory factory = compiler.compile(sql, sqlExecutionContext).getRecordCursorFactory()) {
             try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
                 printCursor(cursor, factory.getMetadata(), true, sink, printer);
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -609,6 +615,9 @@ public final class TestUtils {
         try (RecordCursorFactory factory = compiler.compile(sql, sqlExecutionContext).getRecordCursorFactory()) {
             try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
                 printCursor(cursor, factory.getMetadata(), true, sink, printerWithTypes);
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }

@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.Numbers;
 import io.questdb.std.Rnd;
@@ -63,6 +64,9 @@ public class LastDateGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertEquals(Numbers.LONG_NaN, record.getLong(0));
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -87,6 +91,9 @@ public class LastDateGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertEquals(-6919361415374675248L, record.getLong(0));
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -113,6 +120,9 @@ public class LastDateGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertEquals(Numbers.LONG_NaN, record.getDate(0));
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }

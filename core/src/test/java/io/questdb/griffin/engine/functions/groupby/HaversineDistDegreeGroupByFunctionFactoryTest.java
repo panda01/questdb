@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.NumericException;
 import io.questdb.std.Rnd;
@@ -50,7 +51,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void test10Rows() throws SqlException {
+    public void test10Rows() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -81,7 +82,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void test10RowsAndNullAtEnd() throws SqlException {
+    public void test10RowsAndNullAtEnd() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -113,7 +114,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void test2DistancesAtEquator() throws SqlException {
+    public void test2DistancesAtEquator() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab1 (lat double, lon double, k timestamp)", sqlExecutionContext);
         compiler.compile("create table tab2 (lat double, lon double, k timestamp)", sqlExecutionContext);
@@ -172,7 +173,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void test3Rows() throws SqlException {
+    public void test3Rows() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -204,7 +205,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
 
     //"select s, haversine_dist_deg(lat, lon, k) from tab",
     @Test
-    public void testAggregationBySymbol() throws SqlException {
+    public void testAggregationBySymbol() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (s symbol, lat double, lon double, k timestamp) timestamp(k) partition by NONE", sqlExecutionContext);
 
@@ -1131,7 +1132,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testAllNull() throws SqlException {
+    public void testAllNull() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1154,7 +1155,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testCircumferenceAtEquator() throws SqlException {
+    public void testCircumferenceAtEquator() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1183,7 +1184,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testNegativeLatLon() throws SqlException {
+    public void testNegativeLatLon() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1213,7 +1214,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testOneNullAtEnd() throws SqlException {
+    public void testOneNullAtEnd() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1248,7 +1249,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testOneNullAtTop() throws SqlException {
+    public void testOneNullAtTop() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1282,7 +1283,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testOneNullInMiddle() throws SqlException {
+    public void testOneNullInMiddle() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1313,7 +1314,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testOneNullsInMiddle() throws SqlException {
+    public void testOneNullsInMiddle() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 
@@ -1348,7 +1349,7 @@ public class HaversineDistDegreeGroupByFunctionFactoryTest extends AbstractGriff
     }
 
     @Test
-    public void testPositiveLatLon() throws SqlException {
+    public void testPositiveLatLon() throws SqlException, StaleQueryCacheException {
 
         compiler.compile("create table tab (lat double, lon double, k timestamp)", sqlExecutionContext);
 

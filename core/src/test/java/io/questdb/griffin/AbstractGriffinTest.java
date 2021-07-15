@@ -86,7 +86,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
                     }
                 }
             }
-        } catch (SqlException e) {
+        } catch (SqlException | StaleQueryCacheException e) {
             e.printStackTrace();
         }
     }
@@ -268,7 +268,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
             }
             Assert.assertTrue((expectSize && rowsCount != -1) || (!expectSize && rowsCount == -1));
             Assert.assertTrue(rowsCount == -1 || expectedRow == rowsCount);
-        } catch (SqlException e) {
+        } catch (SqlException | StaleQueryCacheException e) {
             e.printStackTrace();
         }
     }
@@ -414,13 +414,13 @@ public class AbstractGriffinTest extends AbstractCairoTest {
                 } catch (UnsupportedOperationException ignore) {
                 }
             }
-        } catch (SqlException e) {
+        } catch (SqlException | StaleQueryCacheException e) {
             e.printStackTrace();
         }
 
         try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
             testSymbolAPI(factory.getMetadata(), cursor);
-        } catch (SqlException e) {
+        } catch (SqlException | StaleQueryCacheException e) {
             e.printStackTrace();
         }
     }
@@ -521,6 +521,9 @@ public class AbstractGriffinTest extends AbstractCairoTest {
                 timestamp = ts;
                 c++;
             }
+        } catch (StaleQueryCacheException e) {
+            e.printStackTrace();
+            throw SqlException.position(0).put(e.getFlyweightMessage());
         }
     }
 

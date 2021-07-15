@@ -28,6 +28,7 @@ import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
 import io.questdb.griffin.SqlExecutionInterruptor;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.GroupByFunction;
 import io.questdb.std.Misc;
 import io.questdb.std.ObjList;
@@ -65,7 +66,7 @@ public class GroupByNotKeyedRecordCursorFactory implements RecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         final RecordCursor baseCursor = base.getCursor(executionContext);
         try {
             return cursor.of(baseCursor, executionContext);

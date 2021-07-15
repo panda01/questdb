@@ -1120,7 +1120,7 @@ public class O3Test extends AbstractO3Test {
             CairoEngine engine,
             SqlCompiler compiler,
             SqlExecutionContext sqlExecutionContext
-    ) throws SqlException {
+    ) throws SqlException, StaleQueryCacheException {
         compiler.compile(
                 "create table x (" +
                         "seq long, " +

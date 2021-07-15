@@ -24,12 +24,14 @@
 
 package io.questdb.griffin.engine.functions.groupby;
 
+import io.questdb.cairo.CairoException;
 import io.questdb.cairo.TableWriter;
 import io.questdb.cairo.sql.Record;
 import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.Rnd;
 import org.junit.Assert;
@@ -62,6 +64,9 @@ public class MinFloatGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertTrue(Float.isNaN(record.getFloat(0)));
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw CairoException.instance(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -89,6 +94,9 @@ public class MinFloatGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertEquals(0.0011075139045715332, record.getFloat(0), 0.0001);
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw CairoException.instance(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -113,6 +121,9 @@ public class MinFloatGroupByFunctionFactoryTest extends AbstractGriffinTest {
                 Assert.assertEquals(1, cursor.size());
                 Assert.assertTrue(cursor.hasNext());
                 Assert.assertEquals(0.0011075139045715332, record.getFloat(0), 0.0001);
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw CairoException.instance(0).put(e.getFlyweightMessage());
             }
         }
     }

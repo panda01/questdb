@@ -235,6 +235,9 @@ public class LatestByParallelTest {
         try {
             try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
                 TestUtils.assertCursor(expected, cursor, factory.getMetadata(), true, sink);
+            } catch (StaleQueryCacheException e) {
+                e.printStackTrace();
+                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         } finally {
             Misc.free(factory);

@@ -31,6 +31,7 @@ import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.RecordComparator;
 import io.questdb.griffin.engine.orderby.LongTreeChain;
 import io.questdb.std.Misc;
@@ -113,7 +114,7 @@ public class CachedAnalyticRecordCursorFactory implements RecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         recordChain.clear();
         clearTrees();
         resetFunctions();

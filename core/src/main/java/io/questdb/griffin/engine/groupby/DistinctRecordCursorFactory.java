@@ -32,6 +32,7 @@ import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
 import io.questdb.griffin.SqlExecutionInterruptor;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.BytecodeAssembler;
 import io.questdb.std.Misc;
 import io.questdb.std.Transient;
@@ -69,7 +70,7 @@ public class DistinctRecordCursorFactory implements RecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         dataMap.clear();
         final RecordCursor baseCursor = base.getCursor(executionContext);
         try {

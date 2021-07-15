@@ -27,6 +27,7 @@ package io.questdb.cairo;
 import io.questdb.cairo.sql.Record;
 import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.SymbolTable;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import io.questdb.std.Misc;
 import io.questdb.std.Rows;
@@ -102,7 +103,7 @@ public class TableReaderSelectedColumnRecordCursor implements RecordCursor {
         return reader.size();
     }
 
-    public void of(TableReader reader) {
+    public void of(TableReader reader) throws StaleQueryCacheException {
         this.partitionLo = 0;
         this.recodLo = 0;
         this.partitionHi = reader.getPartitionCount();
@@ -112,7 +113,7 @@ public class TableReaderSelectedColumnRecordCursor implements RecordCursor {
         of0(reader);
     }
 
-    public void of(TableReader reader, int partitionLo, long recordLo, int partitionHi, long recordHi) {
+    public void of(TableReader reader, int partitionLo, long recordLo, int partitionHi, long recordHi) throws StaleQueryCacheException {
         this.partitionLo = partitionLo;
         this.partitionHi = partitionHi;
         this.recodLo = recordLo;
@@ -120,7 +121,7 @@ public class TableReaderSelectedColumnRecordCursor implements RecordCursor {
         of0(reader);
     }
 
-    private void of0(TableReader reader) {
+    private void of0(TableReader reader) throws StaleQueryCacheException {
         close();
         this.reader = reader;
         this.recordA.of(reader);

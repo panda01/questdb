@@ -1900,6 +1900,7 @@ public class SqlCodeGenerator implements Mutable {
                             distinctSymbolMetadata,
                             Chars.toString(tableName),
                             columnIndex,
+                            reader.getMetadata().getId(),
                             reader.getVersion()
                     );
                 }
@@ -2494,7 +2495,7 @@ public class SqlCodeGenerator implements Mutable {
                     dfcFactory = new IntervalFwdDataFrameCursorFactory(engine, tableName, model.getTableVersion(), intervalModel, readerTimestampIndex);
                     intervalHitsOnlyOnePartition = intervalModel.allIntervalsHitOnePartition(reader.getPartitionedBy());
                 } else {
-                    dfcFactory = new FullFwdDataFrameCursorFactory(engine, tableName, model.getTableVersion());
+                    dfcFactory = new FullFwdDataFrameCursorFactory(engine, tableName, model.getTableId(), model.getTableVersion());
                     intervalHitsOnlyOnePartition = false;
                 }
 

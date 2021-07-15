@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.EmptyTableNoSizeRecordCursor;
 import io.questdb.std.Misc;
 import io.questdb.std.ObjList;
@@ -48,7 +49,7 @@ public abstract class AbstractSampleByNotKeyedRecordCursorFactory extends Abstra
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         final RecordCursor baseCursor = base.getCursor(executionContext);
         if (baseCursor.hasNext()) {
             return initFunctionsAndCursor(executionContext, baseCursor);

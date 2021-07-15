@@ -32,6 +32,7 @@ import io.questdb.cairo.sql.Function;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.CharSequenceHashSet;
 import io.questdb.std.IntList;
 import io.questdb.std.Transient;
@@ -78,7 +79,7 @@ public class LatestByValuesFilteredRecordCursorFactory extends AbstractDeferredT
     protected AbstractDataFrameRecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException {
+    ) throws SqlException, StaleQueryCacheException {
         if (filter != null) {
             AbstractDataFrameRecordCursor cursor = super.getCursorInstance(dataFrameCursor, executionContext);
             filter.init(cursor, executionContext);

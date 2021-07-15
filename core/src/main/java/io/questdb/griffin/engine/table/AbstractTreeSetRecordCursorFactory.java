@@ -30,6 +30,7 @@ import io.questdb.cairo.sql.DataFrameCursorFactory;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.DirectLongList;
 import io.questdb.std.Misc;
 
@@ -56,7 +57,7 @@ abstract class AbstractTreeSetRecordCursorFactory extends AbstractDataFrameRecor
     protected AbstractDataFrameRecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException {
+    ) throws SqlException, StaleQueryCacheException {
         cursor.of(dataFrameCursor, executionContext);
         return cursor;
     }

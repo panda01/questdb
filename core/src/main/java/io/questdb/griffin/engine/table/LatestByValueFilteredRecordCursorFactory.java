@@ -27,6 +27,7 @@ package io.questdb.griffin.engine.table;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +71,7 @@ public class LatestByValueFilteredRecordCursorFactory extends AbstractDataFrameR
     protected RecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException {
+    ) throws SqlException, StaleQueryCacheException {
         cursor.of(dataFrameCursor, executionContext);
         return cursor;
     }

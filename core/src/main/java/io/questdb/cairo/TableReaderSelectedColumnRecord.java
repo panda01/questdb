@@ -25,6 +25,7 @@
 package io.questdb.cairo;
 
 import io.questdb.cairo.sql.Record;
+import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.BinarySequence;
 import io.questdb.std.IntList;
 import io.questdb.std.Long256;
@@ -40,6 +41,8 @@ public class TableReaderSelectedColumnRecord implements Record {
     private int columnBase;
     private long recordIndex = 0;
     private TableReader reader;
+    private long metaVersion = -1;
+    private int metaId;
 
     public TableReaderSelectedColumnRecord(@NotNull IntList columnIndexes) {
         this.columnIndexes = columnIndexes;
@@ -253,7 +256,17 @@ public class TableReaderSelectedColumnRecord implements Record {
         this.recordIndex = recordIndex;
     }
 
-    public void of(TableReader reader) {
+    public void of(TableReader reader) throws StaleQueryCacheException {
+        long metaVersion = reader.getVersion();
+        int metaTableId = reader.getMetadata().getId();
+        if (this.metaVersion != metaVersion || this.metaId != metaTableId) {
+            if (this.metaVersion < 0) {
+                this.metaVersion = metaVersion;
+                this.metaId = metaTableId;
+            } else {
+                throw StaleQueryCacheException.of(reader.getTableName());
+            }
+        }
         this.reader = reader;
     }
 

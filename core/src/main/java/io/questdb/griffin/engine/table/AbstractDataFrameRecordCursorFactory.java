@@ -31,6 +31,7 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
+import io.questdb.griffin.StaleQueryCacheException;
 
 abstract class AbstractDataFrameRecordCursorFactory extends AbstractRecordCursorFactory {
     protected final DataFrameCursorFactory dataFrameCursorFactory;
@@ -41,7 +42,7 @@ abstract class AbstractDataFrameRecordCursorFactory extends AbstractRecordCursor
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
         DataFrameCursor dataFrameCursor = dataFrameCursorFactory.getCursor(executionContext);
         try {
             return getCursorInstance(dataFrameCursor, executionContext);
@@ -51,5 +52,5 @@ abstract class AbstractDataFrameRecordCursorFactory extends AbstractRecordCursor
         }
     }
 
-    protected abstract RecordCursor getCursorInstance(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException;
+    protected abstract RecordCursor getCursorInstance(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException;
 }
