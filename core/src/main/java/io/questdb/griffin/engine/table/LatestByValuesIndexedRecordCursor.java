@@ -29,7 +29,6 @@ import io.questdb.cairo.sql.DataFrame;
 import io.questdb.cairo.sql.DataFrameCursor;
 import io.questdb.cairo.sql.RowCursor;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.DirectLongList;
 import io.questdb.std.IntHashSet;
 import io.questdb.std.IntList;
@@ -87,7 +86,7 @@ class LatestByValuesIndexedRecordCursor extends AbstractDataFrameRecordCursor {
         index = rows.size() - 1;
     }
 
-    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws StaleQueryCacheException {
+    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) {
         this.dataFrameCursor = dataFrameCursor;
         this.recordA.of(dataFrameCursor.getTableReader());
         this.recordB.of(dataFrameCursor.getTableReader());

@@ -26,6 +26,7 @@ package io.questdb.griffin;
 
 import io.questdb.cairo.TableWriter;
 import io.questdb.cairo.security.AllowAllCairoSecurityContext;
+import io.questdb.cairo.sql.ReaderOutOfDateException;
 import io.questdb.cairo.sql.Record;
 import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
@@ -451,8 +452,8 @@ public class TruncateTest extends AbstractGriffinTest {
                 try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
                     TestUtils.printCursor(cursor, factory.getMetadata(), true, sink, printer);
                     Assert.fail();
-                } catch (StaleQueryCacheException e) {
-                    TestUtils.assertContains(e.getFlyweightMessage(), "query cannot be used because table schema has changed [table='y']");
+                } catch (ReaderOutOfDateException e) {
+                    TestUtils.assertContains(e.getFlyweightMessage(), "cannot be used because table schema has changed [table='y']");
                 }
             }
         });
@@ -485,8 +486,8 @@ public class TruncateTest extends AbstractGriffinTest {
                 try (RecordCursor cursor = factory.getCursor(sqlExecutionContext)) {
                     TestUtils.printCursor(cursor, factory.getMetadata(), true, sink, printer);
                     Assert.fail();
-                } catch (StaleQueryCacheException e) {
-                    TestUtils.assertContains(e.getFlyweightMessage(), "query cannot be used because table schema has changed [table='y']");
+                } catch (ReaderOutOfDateException e) {
+                    TestUtils.assertContains(e.getFlyweightMessage(), "cannot be used because table schema has changed [table='y']");
                 }
             }
         });

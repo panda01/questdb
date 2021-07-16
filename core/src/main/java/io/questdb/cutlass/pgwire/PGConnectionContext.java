@@ -2137,7 +2137,7 @@ public class PGConnectionContext implements IOContext, Mutable, WriterSource {
                     currentCursor = currentFactory.getCursor(sqlExecutionContext);
                     // cache random if it was replaced
                     this.rnd = sqlExecutionContext.getRandom();
-                } catch (StaleQueryCacheException e) {
+                } catch (ReaderOutOfDateException e) {
                     LOG.info().$(e.getFlyweightMessage()).$();
                     forceReCompile = true;
                 } catch (Throwable e) {

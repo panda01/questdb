@@ -32,7 +32,6 @@ import io.questdb.cairo.map.MapValue;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.GroupByFunction;
 import io.questdb.std.BytecodeAssembler;
 import io.questdb.std.Misc;
@@ -85,7 +84,7 @@ public class GroupByRecordCursorFactory implements RecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException{
         dataMap.clear();
         final RecordCursor baseCursor = base.getCursor(executionContext);
 

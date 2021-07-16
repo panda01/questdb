@@ -140,9 +140,6 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
                             factory,
                             configuration.getKeepAliveHeader());
                 } catch (ReaderOutOfDateException e) {
-                    Misc.free(factory);
-                    compileQuery(state);
-                } catch (StaleQueryCacheException e) {
                     LOG.info().$(e.getFlyweightMessage()).$();
                     Misc.free(factory);
                     compileQuery(state);
@@ -313,22 +310,18 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
         final CompiledQuery cc = compiler.compile(state.getQuery(), sqlExecutionContext);
         sqlExecutionContext.storeTelemetry(cc.getType(), Telemetry.ORIGIN_HTTP_JSON);
         state.setCompilerNanos(nanosecondClock.getTicks() - nanos);
-        try {
-            queryExecutors.getQuick(cc.getType()).execute(
-                    state,
-                    cc,
-                    configuration.getKeepAliveHeader()
-            );
-        } catch (StaleQueryCacheException e) {
-            throw CairoException.instance(0).put("Query plan is stale on first compilation [table=").put(e.getFlyweightMessage()).put("]");
-        }
+        queryExecutors.getQuick(cc.getType()).execute(
+                state,
+                cc,
+                configuration.getKeepAliveHeader()
+        );
     }
 
     private void executeCachedSelect(
             JsonQueryProcessorState state,
             RecordCursorFactory factory,
             CharSequence keepAliveHeader
-    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException, StaleQueryCacheException {
+    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException{
         state.setCompilerNanos(0);
         state.logExecuteCached();
         executeSelect(state, factory, keepAliveHeader);
@@ -368,7 +361,7 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
             JsonQueryProcessorState state,
             CompiledQuery cc,
             CharSequence keepAliveHeader
-    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException, StaleQueryCacheException {
+    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException{
         state.logExecuteNew();
         final RecordCursorFactory factory = cc.getRecordCursorFactory();
         executeSelect(
@@ -381,7 +374,7 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
             JsonQueryProcessorState state,
             RecordCursorFactory factory,
             CharSequence keepAliveHeader
-    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException, StaleQueryCacheException {
+    ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException{
         final HttpConnectionContext context = state.getHttpConnectionContext();
         try {
             if (state.of(factory, sqlExecutionContext)) {
@@ -471,7 +464,7 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
                 JsonQueryProcessorState state,
                 CompiledQuery cc,
                 CharSequence keepAliveHeader
-        ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException, StaleQueryCacheException;
+        ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException;
     }
 
 }

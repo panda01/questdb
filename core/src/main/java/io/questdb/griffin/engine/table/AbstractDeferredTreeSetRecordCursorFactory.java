@@ -30,7 +30,6 @@ import io.questdb.cairo.TableUtils;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.CharSequenceHashSet;
 import io.questdb.std.Chars;
 import io.questdb.std.IntHashSet;
@@ -86,7 +85,7 @@ public abstract class AbstractDeferredTreeSetRecordCursorFactory extends Abstrac
     protected AbstractDataFrameRecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException, StaleQueryCacheException {
+    ) throws SqlException{
         if (deferredSymbols != null && deferredSymbols.size() > 0) {
             StaticSymbolTable symbolTable = dataFrameCursor.getSymbolTable(columnIndex);
             for (int i = 0, n = deferredSymbols.size(); i < n; ) {

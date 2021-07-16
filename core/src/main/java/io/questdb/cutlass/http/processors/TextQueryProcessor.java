@@ -30,6 +30,7 @@ import io.questdb.cairo.CairoEngine;
 import io.questdb.cairo.CairoError;
 import io.questdb.cairo.CairoException;
 import io.questdb.cairo.ColumnType;
+import io.questdb.cairo.sql.ReaderOutOfDateException;
 import io.questdb.cairo.sql.Record;
 import io.questdb.cutlass.http.*;
 import io.questdb.cutlass.text.TextUtil;
@@ -138,7 +139,7 @@ public class TextQueryProcessor implements HttpRequestProcessor, Closeable {
                         internalError(context.getChunkedResponseSocket(), e, state);
                     } catch (CairoError e) {
                         internalError(context.getChunkedResponseSocket(), e, state);
-                    } catch (StaleQueryCacheException e) {
+                    } catch (ReaderOutOfDateException e) {
                         LOG.info().$(e.getFlyweightMessage()).$();
                         doneCompile = false;
                         state.recordCursorFactory = null;

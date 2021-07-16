@@ -375,9 +375,6 @@ public class O3CommitLagTest extends AbstractO3Test {
                     copier.copy(record, row);
                     row.append();
                 }
-            } catch (StaleQueryCacheException e) {
-                e.printStackTrace();
-                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }

@@ -687,13 +687,7 @@ public class SqlCompiler implements Closeable {
         if (executor == null) {
             return compileUsingModel(executionContext);
         }
-        try {
-            return executor.execute(executionContext);
-        } catch (StaleQueryCacheException e) {
-            // This suppose to never happen, brand new compile should not be stale
-            LOG.error().$(e.getFlyweightMessage()).$();
-            throw CairoException.instance(0).put(e.getFlyweightMessage());
-        }
+        return executor.execute(executionContext);
     }
 
     public CairoEngine getEngine() {
@@ -1096,8 +1090,7 @@ public class SqlCompiler implements Closeable {
         } while (true);
     }
 
-    private void alterTableDropOrAttachPartition(TableWriter writer, int action, SqlExecutionContext executionContext)
-            throws SqlException {
+    private void alterTableDropOrAttachPartition(TableWriter writer, int action, SqlExecutionContext executionContext) throws SqlException {
         final int pos = lexer.lastTokenPosition();
         final CharSequence tok = expectToken(lexer, "'list' or 'where'");
         if (SqlKeywords.isListKeyword(tok)) {
@@ -1627,9 +1620,6 @@ public class SqlCompiler implements Closeable {
                 }
                 throw SqlException.$(0, "Concurrent modification could not be handled. Failed to clean up. See log for more details.");
             }
-        } catch (StaleQueryCacheException e) {
-            LOG.error().$(e.getFlyweightMessage()).$();
-            throw CairoException.instance(0).put(e.getFlyweightMessage());
         }
     }
 
@@ -1715,7 +1705,12 @@ public class SqlCompiler implements Closeable {
         tableExistsOrFail(name.position, name.token, executionContext);
 
         ObjList<Function> valueFunctions = null;
-        try (TableReader reader = engine.getReader(executionContext.getCairoSecurityContext(), name.token, TableUtils.ANY_TABLE_VERSION)) {
+        try (TableReader reader = engine.getReader(
+                executionContext.getCairoSecurityContext(),
+                name.token,
+                TableUtils.ANY_TABLE_ID,
+                TableUtils.ANY_TABLE_VERSION
+        )) {
             final long structureVersion = reader.getVersion();
             final RecordMetadata metadata = reader.getMetadata();
             final int writerTimestampIndex = metadata.getTimestampIndex();
@@ -1816,22 +1811,6 @@ public class SqlCompiler implements Closeable {
             final int cursorTimestampIndex = cursorMetadata.getTimestampIndex();
             final int cursorColumnCount = cursorMetadata.getColumnCount();
 
-
-//            if (writerTimestampIndex > -1 && cursorTimestampIndex == -1) {
-//                if (cursorColumnCount <= writerTimestampIndex) {
-//
-//                } else {
-//                    int columnType = cursorMetadata.getColumnType(writerTimestampIndex);
-//                    if (columnType != ColumnType.TIMESTAMP && columnType != ColumnType.STRING) {
-//                        throw SqlException.$(name.position, "expected timestamp column but type is ").put(ColumnType.nameOf(columnType));
-//                    }
-//                }
-//            }
-
-//            if (writerTimestampIndex > -1 && cursorTimestampIndex > -1 && writerTimestampIndex != cursorTimestampIndex) {
-//                throw SqlException.$(name.position, "nominated column of existing table (").put(writerTimestampIndex).put(") does not match nominated column in select query (").put(cursorTimestampIndex).put(')');
-//            }
-
             final RecordToRowCopier copier;
             CharSequenceHashSet columnSet = model.getColumnSet();
             final int columnSetSize = columnSet.size();
@@ -1872,12 +1851,28 @@ public class SqlCompiler implements Closeable {
                 }
 
                 // fail when target table requires chronological data and cursor cannot provide it
-                if (timestampIndexFound < 0) {
+                if (timestampIndexFound < 0 && writerTimestampIndex >= 0) {
                     throw SqlException.$(name.position, "select clause must provide timestamp column");
                 }
 
                 copier = assembleRecordToRowCopier(asm, cursorMetadata, writerMetadata, listColumnFilter);
             } else {
+                // fail when target table requires chronological data and cursor cannot provide it
+                if (writerTimestampIndex > -1 && cursorTimestampIndex == -1) {
+                    if (cursorColumnCount <= writerTimestampIndex) {
+                        throw SqlException.$(name.position, "select clause must provide timestamp column");
+                    } else {
+                        int columnType = cursorMetadata.getColumnType(writerTimestampIndex);
+                        if (columnType != ColumnType.TIMESTAMP && columnType != ColumnType.STRING && columnType != ColumnType.NULL) {
+                            throw SqlException.$(name.position, "expected timestamp column but type is ").put(ColumnType.nameOf(columnType));
+                        }
+                    }
+                }
+
+                if (writerTimestampIndex > -1 && cursorTimestampIndex > -1 && writerTimestampIndex != cursorTimestampIndex) {
+                    throw SqlException.$(name.position, "nominated column of existing table (").put(writerTimestampIndex).put(") does not match nominated column in select query (").put(cursorTimestampIndex).put(')');
+                }
+                timestampIndexFound = writerTimestampIndex;
 
                 final int n = writerMetadata.getColumnCount();
                 if (n > cursorMetadata.getColumnCount()) {
@@ -1933,9 +1928,6 @@ public class SqlCompiler implements Closeable {
                     writer.rollback();
                     throw e;
                 }
-            } catch (StaleQueryCacheException e) {
-                LOG.error().$(e.getFlyweightMessage()).$();
-                throw CairoException.instance(0).put(e.getFlyweightMessage());
             }
         }
         return compiledQuery.ofInsertAsSelect();
@@ -2357,7 +2349,7 @@ public class SqlCompiler implements Closeable {
 
     @FunctionalInterface
     protected interface KeywordBasedExecutor {
-        CompiledQuery execute(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException;
+        CompiledQuery execute(SqlExecutionContext executionContext) throws SqlException;
     }
 
     @FunctionalInterface

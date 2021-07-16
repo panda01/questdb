@@ -37,7 +37,6 @@ import io.questdb.cutlass.text.TextUtil;
 import io.questdb.cutlass.text.Utf8Exception;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContextImpl;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.log.Log;
 import io.questdb.log.LogFactory;
 import io.questdb.log.LogRecord;
@@ -525,7 +524,7 @@ public class JsonQueryProcessorState implements Mutable, Closeable {
     }
 
     boolean of(RecordCursorFactory factory, SqlExecutionContextImpl sqlExecutionContext)
-            throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException, StaleQueryCacheException {
+            throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException{
         this.recordCursorFactory = factory;
         queryCacheable = true;
         this.cursor = factory.getCursor(sqlExecutionContext);

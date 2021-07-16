@@ -29,7 +29,6 @@ import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.cairo.sql.RecordMetadata;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 
 public class UnionAllRecordCursorFactory implements RecordCursorFactory {
     private final RecordMetadata metadata;
@@ -49,7 +48,7 @@ public class UnionAllRecordCursorFactory implements RecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException{
         cursor.of(
                 masterFactory.getCursor(executionContext),
                 slaveFactory.getCursor(executionContext)

@@ -29,7 +29,6 @@ import io.questdb.cairo.sql.DataFrame;
 import io.questdb.cairo.sql.Function;
 import io.questdb.cairo.sql.RowCursor;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 
 public class SymbolIndexFilteredRowCursorFactory implements FunctionBasedRowCursorFactory {
@@ -62,7 +61,7 @@ public class SymbolIndexFilteredRowCursorFactory implements FunctionBasedRowCurs
     }
 
     @Override
-    public void prepareCursor(TableReader tableReader, SqlExecutionContext sqlExecutionContext) throws StaleQueryCacheException {
+    public void prepareCursor(TableReader tableReader, SqlExecutionContext sqlExecutionContext) {
         this.cursor.prepare(tableReader);
     }
 

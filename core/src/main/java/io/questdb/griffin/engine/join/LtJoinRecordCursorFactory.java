@@ -32,7 +32,6 @@ import io.questdb.cairo.map.*;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import io.questdb.std.Misc;
 import io.questdb.std.Transient;
@@ -86,7 +85,7 @@ public class LtJoinRecordCursorFactory extends AbstractRecordCursorFactory {
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException{
         cursor.of(
                 masterFactory.getCursor(executionContext),
                 slaveFactory.getCursor(executionContext)

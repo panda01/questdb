@@ -30,7 +30,6 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.Numbers;
 import io.questdb.std.Rnd;
@@ -46,7 +45,7 @@ public class FirstTimestampGroupByFunctionFactoryTest extends AbstractGriffinTes
     }
 
     @Test
-    public void testAllNull() throws SqlException, StaleQueryCacheException {
+    public void testAllNull() throws SqlException{
 
         compiler.compile("create table tab (f timestamp)", sqlExecutionContext);
 
@@ -69,7 +68,7 @@ public class FirstTimestampGroupByFunctionFactoryTest extends AbstractGriffinTes
     }
 
     @Test
-    public void testFirstNull() throws SqlException, StaleQueryCacheException {
+    public void testFirstNull() throws SqlException{
 
         compiler.compile("create table tab (f timestamp)", sqlExecutionContext);
 
@@ -96,7 +95,7 @@ public class FirstTimestampGroupByFunctionFactoryTest extends AbstractGriffinTes
     }
 
     @Test
-    public void testNonNull() throws SqlException, StaleQueryCacheException {
+    public void testNonNull() throws SqlException{
 
         compiler.compile("create table tab (f timestamp)", sqlExecutionContext);
 
@@ -120,7 +119,7 @@ public class FirstTimestampGroupByFunctionFactoryTest extends AbstractGriffinTes
     }
 
     @Test
-    public void testSomeNull() throws SqlException, StaleQueryCacheException {
+    public void testSomeNull() throws SqlException{
 
         compiler.compile("create table tab (f timestamp)", sqlExecutionContext);
 

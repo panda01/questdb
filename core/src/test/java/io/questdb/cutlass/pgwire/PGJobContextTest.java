@@ -3784,6 +3784,7 @@ nodejs code:
                             ")").execute();
 
                     ResultSet rs1 = select.executeQuery();
+                    sink.clear();
                     assertResultSet("timestamp[TIMESTAMP],symbol1[VARCHAR]\n" +
                             "1970-01-01 02:30:00.0,null\n" +
                             "1970-01-01 02:46:40.0,b\n" +

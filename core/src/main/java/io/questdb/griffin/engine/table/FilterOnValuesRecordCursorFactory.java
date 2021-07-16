@@ -30,7 +30,6 @@ import io.questdb.cairo.sql.*;
 import io.questdb.griffin.OrderByMnemonic;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.model.QueryModel;
 import io.questdb.std.*;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +133,7 @@ public class FilterOnValuesRecordCursorFactory extends AbstractDataFrameRecordCu
 
     @Override
     protected RecordCursor getCursorInstance(DataFrameCursor dataFrameCursor, SqlExecutionContext sqlExecutionContext)
-            throws SqlException, StaleQueryCacheException {
+            throws SqlException{
         for (int i = 0, n = cursorFactories.size(); i < n; i++) {
             cursorFactories.getQuick(i).getFunction().init(dataFrameCursor, sqlExecutionContext);
         }

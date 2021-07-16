@@ -28,7 +28,6 @@ import io.questdb.cairo.TableReader;
 import io.questdb.cairo.sql.DataFrameCursor;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.DirectLongList;
 import io.questdb.std.IntList;
 import io.questdb.std.Rows;
@@ -67,7 +66,7 @@ abstract class AbstractDescendingRecordListCursor extends AbstractDataFrameRecor
     }
 
     @Override
-    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
+    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws SqlException{
         this.dataFrameCursor = dataFrameCursor;
         TableReader tableReader = dataFrameCursor.getTableReader();
 

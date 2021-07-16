@@ -197,7 +197,7 @@ public class SampleByInterpolateRecordCursorFactory implements RecordCursorFacto
     }
 
     @Override
-    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException, StaleQueryCacheException {
+    public RecordCursor getCursor(SqlExecutionContext executionContext) throws SqlException{
         recordKeyMap.clear();
         dataMap.clear();
         final RecordCursor baseCursor = base.getCursor(executionContext);

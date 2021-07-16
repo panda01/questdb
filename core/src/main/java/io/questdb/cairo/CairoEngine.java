@@ -240,7 +240,7 @@ public class CairoEngine implements Closeable, WriterSource {
         if ((version > -1 && reader.getVersion() != version)
             || tableId > -1 && reader.getMetadata().getId() != tableId) {
             reader.close();
-            throw ReaderOutOfDateException.INSTANCE;
+            throw ReaderOutOfDateException.of(tableName);
         }
         return reader;
     }

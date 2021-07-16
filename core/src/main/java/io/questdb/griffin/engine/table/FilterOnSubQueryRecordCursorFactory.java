@@ -28,7 +28,6 @@ import io.questdb.cairo.BitmapIndexReader;
 import io.questdb.cairo.sql.*;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.EmptyTableRandomRecordCursor;
 import io.questdb.std.IntList;
 import io.questdb.std.IntObjHashMap;
@@ -86,7 +85,7 @@ public class FilterOnSubQueryRecordCursorFactory extends AbstractDataFrameRecord
     protected RecordCursor getCursorInstance(
             DataFrameCursor dataFrameCursor,
             SqlExecutionContext executionContext
-    ) throws SqlException, StaleQueryCacheException {
+    ) throws SqlException{
         StaticSymbolTable symbolTable = dataFrameCursor.getSymbolTable(columnIndex);
         IntObjHashMap<RowCursorFactory> targetFactories;
         if (factories == factoriesA) {

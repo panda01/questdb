@@ -30,7 +30,6 @@ import io.questdb.cairo.sql.*;
 import io.questdb.griffin.FunctionFactory;
 import io.questdb.griffin.SqlException;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.BinaryFunction;
 import io.questdb.griffin.engine.functions.BooleanFunction;
 import io.questdb.griffin.engine.functions.SymbolFunction;
@@ -109,9 +108,6 @@ public class InSymbolCursorFunctionFactory implements FunctionFactory {
                         symbolKeys.add(key + 1);
                     }
                 }
-            } catch (StaleQueryCacheException e) {
-                // TODO: re-throw it (lots of lines to change)
-                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
         }
     }
@@ -171,9 +167,6 @@ public class InSymbolCursorFunctionFactory implements FunctionFactory {
                         }
                     }
                 }
-            } catch (StaleQueryCacheException e) {
-                // TODO: re-throw it (lots of lines to change)
-                throw SqlException.position(0).put(e.getFlyweightMessage());
             }
             this.valueSet = valueSet;
         }

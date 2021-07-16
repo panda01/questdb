@@ -27,7 +27,6 @@ package io.questdb.griffin.engine.table;
 import io.questdb.cairo.sql.DataFrame;
 import io.questdb.cairo.sql.DataFrameCursor;
 import io.questdb.griffin.SqlExecutionContext;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.std.IntList;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +83,7 @@ class LatestByValueRecordCursor extends AbstractDataFrameRecordCursor {
     }
 
     @Override
-    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) throws StaleQueryCacheException {
+    void of(DataFrameCursor dataFrameCursor, SqlExecutionContext executionContext) {
         this.dataFrameCursor = dataFrameCursor;
         this.recordA.of(dataFrameCursor.getTableReader());
         this.recordB.of(dataFrameCursor.getTableReader());

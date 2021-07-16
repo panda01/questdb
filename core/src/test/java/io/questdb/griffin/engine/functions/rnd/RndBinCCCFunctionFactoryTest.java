@@ -29,7 +29,6 @@ import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.FunctionFactory;
 import io.questdb.griffin.SqlCompiler;
 import io.questdb.griffin.SqlException;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.AbstractFunctionFactoryTest;
 import io.questdb.griffin.engine.functions.math.NegIntFunctionFactory;
 import io.questdb.std.Rnd;
@@ -136,11 +135,6 @@ public class RndBinCCCFunctionFactoryTest extends AbstractFunctionFactoryTest {
 
     private void assertQuery(CharSequence expected, CharSequence sql) throws SqlException {
         RecordCursorFactory factory = compiler.compile(sql, sqlExecutionContext).getRecordCursorFactory();
-        try {
-            assertCursor(expected, factory.getCursor(sqlExecutionContext), factory.getMetadata(), true);
-        } catch (StaleQueryCacheException e) {
-            e.printStackTrace();
-            throw SqlException.position(0).put(e.getFlyweightMessage());
-        }
+        assertCursor(expected, factory.getCursor(sqlExecutionContext), factory.getMetadata(), true);
     }
 }

@@ -30,7 +30,6 @@ import io.questdb.cairo.sql.RecordCursor;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.griffin.AbstractGriffinTest;
 import io.questdb.griffin.SqlException;
-import io.questdb.griffin.StaleQueryCacheException;
 import io.questdb.griffin.engine.functions.rnd.SharedRandom;
 import io.questdb.std.Rnd;
 import org.junit.Assert;
@@ -73,7 +72,7 @@ public class LastDoubleGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testAllNull() throws SqlException, StaleQueryCacheException {
+    public void testAllNull() throws SqlException{
 
         compiler.compile("create table tab (f double)", sqlExecutionContext);
 
@@ -96,7 +95,7 @@ public class LastDoubleGroupByFunctionFactoryTest extends AbstractGriffinTest {
     }
 
     @Test
-    public void testNonNull() throws SqlException, StaleQueryCacheException {
+    public void testNonNull() throws SqlException{
 
         compiler.compile("create table tab (f double)", sqlExecutionContext);
 
