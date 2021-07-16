@@ -58,7 +58,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
             final Record record = cursor.getRecord();
             while (cursor.hasNext()) {
                 for (int i = 0; i < columnCount; i++) {
-                    switch (metadata.getColumnType(i)) {
+                    switch (ColumnType.tagOf(metadata.getColumnType(i))) {
                         case ColumnType.STRING:
                             CharSequence a = record.getStr(i);
                             CharSequence b = record.getStrB(i);
@@ -210,7 +210,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
             int expectedRow = 0;
             while (cursor.hasNext()) {
                 for (int col = 0, n = metadata.getColumnCount(); col < n; col++) {
-                    switch (metadata.getColumnType(col)) {
+                    switch (ColumnType.tagOf(metadata.getColumnType(col))) {
                         case ColumnType.BOOLEAN:
                             Assert.assertEquals(expected[expectedRow].getBool(col), record.getBool(col));
                             break;
@@ -421,7 +421,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
         Record record = cursor.getRecord();
         while (cursor.hasNext()) {
             for (int i = 0, n = metadata.getColumnCount(); i < n; i++) {
-                switch (metadata.getColumnType(i)) {
+                switch (ColumnType.tagOf(metadata.getColumnType(i))) {
                     case ColumnType.STRING:
                         CharSequence s = record.getStr(i);
                         if (s != null) {
@@ -466,7 +466,7 @@ public class AbstractGriffinTest extends AbstractCairoTest {
     private static void testSymbolAPI(RecordMetadata metadata, RecordCursor cursor) {
         IntList symbolIndexes = null;
         for (int i = 0, n = metadata.getColumnCount(); i < n; i++) {
-            if (metadata.getColumnType(i) == ColumnType.SYMBOL) {
+            if (ColumnType.tagOf(metadata.getColumnType(i)) == ColumnType.SYMBOL) {
                 if (symbolIndexes == null) {
                     symbolIndexes = new IntList();
                 }

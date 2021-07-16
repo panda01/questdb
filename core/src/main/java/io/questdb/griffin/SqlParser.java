@@ -499,7 +499,7 @@ public final class SqlParser {
         final int type = toColumnType(lexer, columnType.token);
         columnCastModel.setType(type, columnName.position, columnType.position);
 
-        if (type == ColumnType.SYMBOL) {
+        if (ColumnType.tagOf(type) == ColumnType.SYMBOL) {
             CharSequence tok = tok(lexer, "'capacity', 'nocache', 'cache', 'index' or ')'");
 
             int symbolCapacity;
@@ -577,7 +577,7 @@ public final class SqlParser {
             }
 
             CharSequence tok;
-            if (type == ColumnType.SYMBOL) {
+            if (ColumnType.tagOf(type) == ColumnType.SYMBOL) {
                 tok = tok(lexer, "'capacity', 'nocache', 'cache', 'index' or ')'");
 
                 int symbolCapacity;
